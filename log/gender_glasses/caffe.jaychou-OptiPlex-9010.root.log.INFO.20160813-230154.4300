@@ -1,0 +1,758 @@
+Log file created at: 2016/08/13 23:01:54
+Running on machine: jaychou-OptiPlex-9010
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I0813 23:01:54.571789  4300 caffe.cpp:217] Using GPUs 0
+I0813 23:01:54.605737  4300 caffe.cpp:222] GPU 0: GeForce GTX 650 Ti
+I0813 23:01:54.714819  4300 solver.cpp:48] Initializing solver from parameters: 
+test_iter: 1000
+test_interval: 1000
+base_lr: 0.01
+display: 20
+max_iter: 10000
+lr_policy: "step"
+gamma: 0.1
+momentum: 0.9
+weight_decay: 0.0005
+stepsize: 2000
+snapshot: 10000
+snapshot_prefix: "models/gender_glasses/gg_net_train"
+solver_mode: GPU
+device_id: 0
+net: "models/gender_glasses/train_val.prototxt"
+train_state {
+  level: 0
+  stage: ""
+}
+I0813 23:01:54.715000  4300 solver.cpp:91] Creating training net from net file: models/gender_glasses/train_val.prototxt
+I0813 23:01:54.715554  4300 net.cpp:322] The NetState phase (0) differed from the phase (1) specified by a rule in layer data
+I0813 23:01:54.715571  4300 net.cpp:322] The NetState phase (0) differed from the phase (1) specified by a rule in layer labels
+I0813 23:01:54.715590  4300 net.cpp:322] The NetState phase (0) differed from the phase (1) specified by a rule in layer accuracy_gender
+I0813 23:01:54.715602  4300 net.cpp:322] The NetState phase (0) differed from the phase (1) specified by a rule in layer accuracy_glasses
+I0813 23:01:54.715612  4300 net.cpp:322] The NetState phase (0) differed from the phase (1) specified by a rule in layer accuracy_glasses
+I0813 23:01:54.715742  4300 net.cpp:58] Initializing net from parameters: 
+name: "multi_task"
+state {
+  phase: TRAIN
+  level: 0
+  stage: ""
+}
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  data_param {
+    source: "/home/jaychou/code/new_caffe/caffe-master/examples/gender_glasses/gender_glasses_train_lmdb"
+    batch_size: 100
+    backend: LMDB
+  }
+}
+layer {
+  name: "labels"
+  type: "Data"
+  top: "labels"
+  include {
+    phase: TRAIN
+  }
+  data_param {
+    source: "/home/jaychou/code/new_caffe/caffe-master/examples/gender_glasses/gender_glasses_train_label_lmdb"
+    batch_size: 100
+    backend: LMDB
+  }
+}
+layer {
+  name: "slice1"
+  type: "Slice"
+  bottom: "labels"
+  top: "gender"
+  top: "glasses"
+  slice_param {
+    slice_dim: 1
+    slice_point: 1
+  }
+}
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 20
+    pad: 0
+    kernel_size: 5
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "conv1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "pool1"
+  top: "conv2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 48
+    pad: 0
+    kernel_size: 5
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "conv2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "conv3"
+  type: "Convolution"
+  bottom: "pool2"
+  top: "conv3"
+  param {
+    lr_mult: 0.1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 64
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu3"
+  type: "ReLU"
+  bottom: "conv3"
+  top: "conv3"
+}
+layer {
+  name: "conv4"
+  type: "Convolution"
+  bottom: "conv3"
+  top: "conv4"
+  param {
+    lr_mult: 0.1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 80
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu4"
+  type: "ReLU"
+  bottom: "conv4"
+  top: "conv4"
+}
+layer {
+  name: "ip1"
+  type: "InnerProduct"
+  bottom: "conv4"
+  top: "ip1"
+  inner_product_param {
+    num_output: 512
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu5"
+  type: "ReLU"
+  bottom: "ip1"
+  top: "ip1"
+}
+layer {
+  name: "ip2"
+  type: "InnerProduct"
+  bottom: "ip1"
+  top: "ip2"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss1"
+  type: "SoftmaxWithLoss"
+  bottom: "ip2"
+  bottom: "glasses"
+  top: "loss1"
+  loss_weight: 0.5
+}
+layer {
+  name: "ip3"
+  type: "InnerProduct"
+  bottom: "ip1"
+  top: "ip3"
+  inner_product_param {
+    num_output: 512
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss2"
+  type: "SoftmaxWithLoss"
+  bottom: "ip3"
+  bottom: "gender"
+  top: "loss2"
+  loss_weight: 0.5
+}
+I0813 23:01:54.716368  4300 layer_factory.hpp:77] Creating layer data
+I0813 23:01:54.733692  4300 net.cpp:100] Creating Layer data
+I0813 23:01:54.733754  4300 net.cpp:408] data -> data
+I0813 23:01:54.734769  4304 db_lmdb.cpp:35] Opened lmdb /home/jaychou/code/new_caffe/caffe-master/examples/gender_glasses/gender_glasses_train_lmdb
+I0813 23:01:54.797103  4300 data_layer.cpp:41] output data size: 100,3,100,100
+I0813 23:01:54.818104  4300 net.cpp:150] Setting up data
+I0813 23:01:54.818163  4300 net.cpp:157] Top shape: 100 3 100 100 (3000000)
+I0813 23:01:54.818178  4300 net.cpp:165] Memory required for data: 12000000
+I0813 23:01:54.818207  4300 layer_factory.hpp:77] Creating layer labels
+I0813 23:01:54.824755  4300 net.cpp:100] Creating Layer labels
+I0813 23:01:54.824801  4300 net.cpp:408] labels -> labels
+I0813 23:01:54.825834  4306 db_lmdb.cpp:35] Opened lmdb /home/jaychou/code/new_caffe/caffe-master/examples/gender_glasses/gender_glasses_train_label_lmdb
+I0813 23:01:54.826673  4300 data_layer.cpp:41] output data size: 100,2,1,1
+I0813 23:01:54.826874  4300 net.cpp:150] Setting up labels
+I0813 23:01:54.826901  4300 net.cpp:157] Top shape: 100 2 1 1 (200)
+I0813 23:01:54.826915  4300 net.cpp:165] Memory required for data: 12000800
+I0813 23:01:54.826926  4300 layer_factory.hpp:77] Creating layer slice1
+I0813 23:01:54.826951  4300 net.cpp:100] Creating Layer slice1
+I0813 23:01:54.826969  4300 net.cpp:434] slice1 <- labels
+I0813 23:01:54.826989  4300 net.cpp:408] slice1 -> gender
+I0813 23:01:54.827013  4300 net.cpp:408] slice1 -> glasses
+I0813 23:01:54.827067  4300 net.cpp:150] Setting up slice1
+I0813 23:01:54.827086  4300 net.cpp:157] Top shape: 100 1 1 1 (100)
+I0813 23:01:54.827098  4300 net.cpp:157] Top shape: 100 1 1 1 (100)
+I0813 23:01:54.827110  4300 net.cpp:165] Memory required for data: 12001600
+I0813 23:01:54.827119  4300 layer_factory.hpp:77] Creating layer conv1
+I0813 23:01:54.827150  4300 net.cpp:100] Creating Layer conv1
+I0813 23:01:54.827165  4300 net.cpp:434] conv1 <- data
+I0813 23:01:54.827181  4300 net.cpp:408] conv1 -> conv1
+I0813 23:01:55.835748  4300 net.cpp:150] Setting up conv1
+I0813 23:01:55.835821  4300 net.cpp:157] Top shape: 100 20 96 96 (18432000)
+I0813 23:01:55.835844  4300 net.cpp:165] Memory required for data: 85729600
+I0813 23:01:55.835887  4300 layer_factory.hpp:77] Creating layer relu1
+I0813 23:01:55.835921  4300 net.cpp:100] Creating Layer relu1
+I0813 23:01:55.835950  4300 net.cpp:434] relu1 <- conv1
+I0813 23:01:55.835974  4300 net.cpp:395] relu1 -> conv1 (in-place)
+I0813 23:01:55.844192  4300 net.cpp:150] Setting up relu1
+I0813 23:01:55.844243  4300 net.cpp:157] Top shape: 100 20 96 96 (18432000)
+I0813 23:01:55.844264  4300 net.cpp:165] Memory required for data: 159457600
+I0813 23:01:55.844283  4300 layer_factory.hpp:77] Creating layer pool1
+I0813 23:01:55.844308  4300 net.cpp:100] Creating Layer pool1
+I0813 23:01:55.844337  4300 net.cpp:434] pool1 <- conv1
+I0813 23:01:55.844362  4300 net.cpp:408] pool1 -> pool1
+I0813 23:01:55.844462  4300 net.cpp:150] Setting up pool1
+I0813 23:01:55.844493  4300 net.cpp:157] Top shape: 100 20 48 48 (4608000)
+I0813 23:01:55.844512  4300 net.cpp:165] Memory required for data: 177889600
+I0813 23:01:55.844566  4300 layer_factory.hpp:77] Creating layer conv2
+I0813 23:01:55.844600  4300 net.cpp:100] Creating Layer conv2
+I0813 23:01:55.844626  4300 net.cpp:434] conv2 <- pool1
+I0813 23:01:55.844650  4300 net.cpp:408] conv2 -> conv2
+I0813 23:01:55.847187  4300 net.cpp:150] Setting up conv2
+I0813 23:01:55.847228  4300 net.cpp:157] Top shape: 100 48 44 44 (9292800)
+I0813 23:01:55.847245  4300 net.cpp:165] Memory required for data: 215060800
+I0813 23:01:55.847275  4300 layer_factory.hpp:77] Creating layer relu2
+I0813 23:01:55.847298  4300 net.cpp:100] Creating Layer relu2
+I0813 23:01:55.847316  4300 net.cpp:434] relu2 <- conv2
+I0813 23:01:55.847335  4300 net.cpp:395] relu2 -> conv2 (in-place)
+I0813 23:01:55.847812  4300 net.cpp:150] Setting up relu2
+I0813 23:01:55.847846  4300 net.cpp:157] Top shape: 100 48 44 44 (9292800)
+I0813 23:01:55.847864  4300 net.cpp:165] Memory required for data: 252232000
+I0813 23:01:55.847890  4300 layer_factory.hpp:77] Creating layer pool2
+I0813 23:01:55.847921  4300 net.cpp:100] Creating Layer pool2
+I0813 23:01:55.847937  4300 net.cpp:434] pool2 <- conv2
+I0813 23:01:55.847955  4300 net.cpp:408] pool2 -> pool2
+I0813 23:01:55.848022  4300 net.cpp:150] Setting up pool2
+I0813 23:01:55.848047  4300 net.cpp:157] Top shape: 100 48 22 22 (2323200)
+I0813 23:01:55.848062  4300 net.cpp:165] Memory required for data: 261524800
+I0813 23:01:55.848075  4300 layer_factory.hpp:77] Creating layer conv3
+I0813 23:01:55.848098  4300 net.cpp:100] Creating Layer conv3
+I0813 23:01:55.848114  4300 net.cpp:434] conv3 <- pool2
+I0813 23:01:55.848132  4300 net.cpp:408] conv3 -> conv3
+I0813 23:01:55.850208  4300 net.cpp:150] Setting up conv3
+I0813 23:01:55.850244  4300 net.cpp:157] Top shape: 100 64 20 20 (2560000)
+I0813 23:01:55.850261  4300 net.cpp:165] Memory required for data: 271764800
+I0813 23:01:55.850286  4300 layer_factory.hpp:77] Creating layer relu3
+I0813 23:01:55.850306  4300 net.cpp:100] Creating Layer relu3
+I0813 23:01:55.850322  4300 net.cpp:434] relu3 <- conv3
+I0813 23:01:55.850339  4300 net.cpp:395] relu3 -> conv3 (in-place)
+I0813 23:01:55.850785  4300 net.cpp:150] Setting up relu3
+I0813 23:01:55.850818  4300 net.cpp:157] Top shape: 100 64 20 20 (2560000)
+I0813 23:01:55.850834  4300 net.cpp:165] Memory required for data: 282004800
+I0813 23:01:55.850859  4300 layer_factory.hpp:77] Creating layer conv4
+I0813 23:01:55.850883  4300 net.cpp:100] Creating Layer conv4
+I0813 23:01:55.850904  4300 net.cpp:434] conv4 <- conv3
+I0813 23:01:55.850924  4300 net.cpp:408] conv4 -> conv4
+I0813 23:01:55.853168  4300 net.cpp:150] Setting up conv4
+I0813 23:01:55.853204  4300 net.cpp:157] Top shape: 100 80 18 18 (2592000)
+I0813 23:01:55.853221  4300 net.cpp:165] Memory required for data: 292372800
+I0813 23:01:55.853243  4300 layer_factory.hpp:77] Creating layer relu4
+I0813 23:01:55.853265  4300 net.cpp:100] Creating Layer relu4
+I0813 23:01:55.853279  4300 net.cpp:434] relu4 <- conv4
+I0813 23:01:55.853296  4300 net.cpp:395] relu4 -> conv4 (in-place)
+I0813 23:01:55.853569  4300 net.cpp:150] Setting up relu4
+I0813 23:01:55.853600  4300 net.cpp:157] Top shape: 100 80 18 18 (2592000)
+I0813 23:01:55.853626  4300 net.cpp:165] Memory required for data: 302740800
+I0813 23:01:55.853642  4300 layer_factory.hpp:77] Creating layer ip1
+I0813 23:01:55.853674  4300 net.cpp:100] Creating Layer ip1
+I0813 23:01:55.853695  4300 net.cpp:434] ip1 <- conv4
+I0813 23:01:55.853713  4300 net.cpp:408] ip1 -> ip1
+I0813 23:01:55.981379  4300 net.cpp:150] Setting up ip1
+I0813 23:01:55.981431  4300 net.cpp:157] Top shape: 100 512 (51200)
+I0813 23:01:55.981442  4300 net.cpp:165] Memory required for data: 302945600
+I0813 23:01:55.981467  4300 layer_factory.hpp:77] Creating layer relu5
+I0813 23:01:55.981484  4300 net.cpp:100] Creating Layer relu5
+I0813 23:01:55.981503  4300 net.cpp:434] relu5 <- ip1
+I0813 23:01:55.981516  4300 net.cpp:395] relu5 -> ip1 (in-place)
+I0813 23:01:55.981945  4300 net.cpp:150] Setting up relu5
+I0813 23:01:55.981966  4300 net.cpp:157] Top shape: 100 512 (51200)
+I0813 23:01:55.981976  4300 net.cpp:165] Memory required for data: 303150400
+I0813 23:01:55.982012  4300 layer_factory.hpp:77] Creating layer ip1_relu5_0_split
+I0813 23:01:55.991650  4300 net.cpp:100] Creating Layer ip1_relu5_0_split
+I0813 23:01:55.991675  4300 net.cpp:434] ip1_relu5_0_split <- ip1
+I0813 23:01:55.991690  4300 net.cpp:408] ip1_relu5_0_split -> ip1_relu5_0_split_0
+I0813 23:01:55.991709  4300 net.cpp:408] ip1_relu5_0_split -> ip1_relu5_0_split_1
+I0813 23:01:55.991763  4300 net.cpp:150] Setting up ip1_relu5_0_split
+I0813 23:01:55.991780  4300 net.cpp:157] Top shape: 100 512 (51200)
+I0813 23:01:55.991791  4300 net.cpp:157] Top shape: 100 512 (51200)
+I0813 23:01:55.991799  4300 net.cpp:165] Memory required for data: 303560000
+I0813 23:01:55.991808  4300 layer_factory.hpp:77] Creating layer ip2
+I0813 23:01:55.991827  4300 net.cpp:100] Creating Layer ip2
+I0813 23:01:55.991837  4300 net.cpp:434] ip2 <- ip1_relu5_0_split_0
+I0813 23:01:55.991850  4300 net.cpp:408] ip2 -> ip2
+I0813 23:01:55.991966  4300 net.cpp:150] Setting up ip2
+I0813 23:01:55.991982  4300 net.cpp:157] Top shape: 100 2 (200)
+I0813 23:01:55.991992  4300 net.cpp:165] Memory required for data: 303560800
+I0813 23:01:55.992005  4300 layer_factory.hpp:77] Creating layer loss1
+I0813 23:01:55.992018  4300 net.cpp:100] Creating Layer loss1
+I0813 23:01:55.992028  4300 net.cpp:434] loss1 <- ip2
+I0813 23:01:55.992038  4300 net.cpp:434] loss1 <- glasses
+I0813 23:01:55.992049  4300 net.cpp:408] loss1 -> loss1
+I0813 23:01:55.992069  4300 layer_factory.hpp:77] Creating layer loss1
+I0813 23:01:55.992321  4300 net.cpp:150] Setting up loss1
+I0813 23:01:55.992339  4300 net.cpp:157] Top shape: (1)
+I0813 23:01:55.992349  4300 net.cpp:160]     with loss weight 0.5
+I0813 23:01:55.992385  4300 net.cpp:165] Memory required for data: 303560804
+I0813 23:01:55.992394  4300 layer_factory.hpp:77] Creating layer ip3
+I0813 23:01:55.992419  4300 net.cpp:100] Creating Layer ip3
+I0813 23:01:55.992429  4300 net.cpp:434] ip3 <- ip1_relu5_0_split_1
+I0813 23:01:55.992440  4300 net.cpp:408] ip3 -> ip3
+I0813 23:01:55.994776  4300 net.cpp:150] Setting up ip3
+I0813 23:01:55.994798  4300 net.cpp:157] Top shape: 100 512 (51200)
+I0813 23:01:55.994808  4300 net.cpp:165] Memory required for data: 303765604
+I0813 23:01:55.994822  4300 layer_factory.hpp:77] Creating layer loss2
+I0813 23:01:55.994837  4300 net.cpp:100] Creating Layer loss2
+I0813 23:01:55.994848  4300 net.cpp:434] loss2 <- ip3
+I0813 23:01:55.994859  4300 net.cpp:434] loss2 <- gender
+I0813 23:01:55.994870  4300 net.cpp:408] loss2 -> loss2
+I0813 23:01:55.994887  4300 layer_factory.hpp:77] Creating layer loss2
+I0813 23:01:55.995481  4300 net.cpp:150] Setting up loss2
+I0813 23:01:55.995507  4300 net.cpp:157] Top shape: (1)
+I0813 23:01:55.995518  4300 net.cpp:160]     with loss weight 0.5
+I0813 23:01:55.995533  4300 net.cpp:165] Memory required for data: 303765608
+I0813 23:01:55.995543  4300 net.cpp:226] loss2 needs backward computation.
+I0813 23:01:55.995555  4300 net.cpp:226] ip3 needs backward computation.
+I0813 23:01:55.995568  4300 net.cpp:226] loss1 needs backward computation.
+I0813 23:01:55.995579  4300 net.cpp:226] ip2 needs backward computation.
+I0813 23:01:55.995587  4300 net.cpp:226] ip1_relu5_0_split needs backward computation.
+I0813 23:01:55.995596  4300 net.cpp:226] relu5 needs backward computation.
+I0813 23:01:55.995605  4300 net.cpp:226] ip1 needs backward computation.
+I0813 23:01:55.995615  4300 net.cpp:226] relu4 needs backward computation.
+I0813 23:01:55.995625  4300 net.cpp:226] conv4 needs backward computation.
+I0813 23:01:55.995635  4300 net.cpp:226] relu3 needs backward computation.
+I0813 23:01:55.995643  4300 net.cpp:226] conv3 needs backward computation.
+I0813 23:01:55.995652  4300 net.cpp:226] pool2 needs backward computation.
+I0813 23:01:55.995663  4300 net.cpp:226] relu2 needs backward computation.
+I0813 23:01:55.995672  4300 net.cpp:226] conv2 needs backward computation.
+I0813 23:01:55.995682  4300 net.cpp:226] pool1 needs backward computation.
+I0813 23:01:55.995690  4300 net.cpp:226] relu1 needs backward computation.
+I0813 23:01:55.995713  4300 net.cpp:226] conv1 needs backward computation.
+I0813 23:01:55.995724  4300 net.cpp:228] slice1 does not need backward computation.
+I0813 23:01:55.995734  4300 net.cpp:228] labels does not need backward computation.
+I0813 23:01:55.995743  4300 net.cpp:228] data does not need backward computation.
+I0813 23:01:55.995751  4300 net.cpp:270] This network produces output loss1
+I0813 23:01:55.995761  4300 net.cpp:270] This network produces output loss2
+I0813 23:01:55.995782  4300 net.cpp:283] Network initialization done.
+I0813 23:01:55.996369  4300 solver.cpp:181] Creating test net (#0) specified by net file: models/gender_glasses/train_val.prototxt
+I0813 23:01:55.996417  4300 net.cpp:322] The NetState phase (1) differed from the phase (0) specified by a rule in layer data
+I0813 23:01:55.996429  4300 net.cpp:322] The NetState phase (1) differed from the phase (0) specified by a rule in layer labels
+I0813 23:01:55.996589  4300 net.cpp:58] Initializing net from parameters: 
+name: "multi_task"
+state {
+  phase: TEST
+}
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  data_param {
+    source: "/home/jaychou/code/new_caffe/caffe-master/examples/gender_glasses/gender_glasses_val_lmdb"
+    batch_size: 64
+    backend: LMDB
+  }
+}
+layer {
+  name: "labels"
+  type: "Data"
+  top: "labels"
+  include {
+    phase: TEST
+  }
+  data_param {
+    source: "/home/jaychou/code/new_caffe/caffe-master/examples/gender_glasses/gender_glasses_val_label_lmdb"
+    batch_size: 64
+    backend: LMDB
+  }
+}
+layer {
+  name: "slice1"
+  type: "Slice"
+  bottom: "labels"
+  top: "gender"
+  top: "glasses"
+  slice_param {
+    slice_dim: 1
+    slice_point: 1
+  }
+}
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 20
+    pad: 0
+    kernel_size: 5
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "conv1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "pool1"
+  top: "conv2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 48
+    pad: 0
+    kernel_size: 5
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "conv2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "conv3"
+  type: "Convolution"
+  bottom: "pool2"
+  top: "conv3"
+  param {
+    lr_mult: 0.1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 64
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu3"
+  type: "ReLU"
+  bottom: "conv3"
+  top: "conv3"
+}
+layer {
+  name: "conv4"
+  type: "Convolution"
+  bottom: "conv3"
+  top: "conv4"
+  param {
+    lr_mult: 0.1
+  }
+  param {
+    lr_mult: 0.1
+  }
+  convolution_param {
+    num_output: 80
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu4"
+  type: "ReLU"
+  bottom: "conv4"
+  top: "conv4"
+}
+layer {
+  name: "ip1"
+  type: "InnerProduct"
+  bottom: "conv4"
+  top: "ip1"
+  inner_product_param {
+    num_output: 512
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu5"
+  type: "ReLU"
+  bottom: "ip1"
+  top: "ip1"
+}
+layer {
+  name: "accuracy_gender"
+  type: "Accuracy"
+  bottom: "ip3"
+  bottom: "gender"
+  top: "accuracy_gender"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "ip2"
+  type: "InnerProduct"
+  bottom: "ip1"
+  top: "ip2"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss1"
+  type: "SoftmaxWithLoss"
+  bottom: "ip2"
+  bottom: "glasses"
+  top: "loss1"
+  loss_weight: 0.5
+}
+layer {
+  name: "accuracy_glasses"
+  type: "Accuracy"
+  bottom: "ip5"
+  bottom: "glasses"
+  top: "accuracy_glasses"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "ip3"
+  type: "InnerProduct"
+  bottom: "ip1"
+  top: "ip3"
+  inner_product_param {
+    num_output: 512
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss2"
+  type: "SoftmaxWithLoss"
+  bottom: "ip3"
+  bottom: "gender"
+  top: "loss2"
+  loss_weight: 0.5
+}
+layer {
+  name: "accuracy_glasses"
+  type: "Accuracy"
+  bottom: "ip3"
+  bottom: "gender"
+  top: "accuracy_glasses"
+  include {
+    phase: TEST
+  }
+}
+F0813 23:01:55.997227  4300 insert_splits.cpp:29] Unknown bottom blob 'ip3' (layer 'accuracy_gender', bottom index 0)

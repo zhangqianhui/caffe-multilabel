@@ -1,0 +1,4 @@
+Log file created at: 2016/08/13 22:54:55
+Running on machine: jaychou-OptiPlex-9010
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+F0813 22:54:55.138780  4083 insert_splits.cpp:29] Unknown bottom blob 'ip3' (layer 'loss2', bottom index 0)
